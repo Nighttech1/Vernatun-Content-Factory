@@ -1,5 +1,9 @@
 # content-plan/ — контент-план Вернатуна
 
+## Действующий календарь публикаций
+
+Открой [ситцентр](https://content.vernatunspeakclub.com/growth), чтобы увидеть выпуски текущей московской недели и последующие даты. Календарь читает [версионированный экспорт](https://github.com/Nighttech1/Vernatun-Content-Factory/blob/codex/director-chatgpt-transfer/projects/vernatun/content-plan/exports/publication-plan-2026-v3.json) рабочей ветки `codex/director-chatgpt-transfer`. План с 23 ноября учитывает закрепляемую карусель «Впервые в Вернатуне», выпуски статей из таблицы редакции и анонсы встреч. Чтобы обновить план для всех, согласуй месячные строки, брифы и экспорт именно в рабочей ветке, увеличь `sequence` и проверь полученную редакцию в `/api/growth-workspace`.
+
 ## Решение владельца от 16.11.2026
 
 Для `vernatun` обязательно прочитать `projects/vernatun/cmo/content-responsibility.md`.
