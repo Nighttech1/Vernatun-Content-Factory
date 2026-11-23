@@ -2,7 +2,7 @@
  * C-36 / C-39 / C-114–C-116 / S52 — Studio live feed.
  * Ours: Graph GET /{IG_USER_ID}/media (carousel-engine).
  * Competitors (S52): **last Scout snapshot only** — NEVER call Apify here.
- * Apify runs only via `runScoutApify` (POST .../scout/run).
+ * Studio reads historical competitor snapshots. New trends are found in the browser.
  * Soft-fail per side. Never logs access tokens or scraper keys.
  */
 

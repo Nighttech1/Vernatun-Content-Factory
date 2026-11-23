@@ -42,11 +42,11 @@ class CollectorTests(unittest.TestCase):
     def test_authorization_and_limits_before_network(self):
         cases = [{'SCOUT_AUTHORIZATION': ''}, {'SCOUT_REPORT_ID': '../../bad'},
                  {'SCOUT_LIMIT': '51'}, {'SCOUT_LIMIT': '0'},
-                 {'SCOUT_APIFY_BUDGET_USD': 'NaN'}, {'SCOUT_APIFY_BUDGET_USD': '1.01'},
-                 {'SCOUT_HANDLES': 'a,b,c,d', 'SCOUT_LIMIT': '12'},
-                 {'SCOUT_HANDLES': 'https://evil.example/x'}, {'APIFY_TOKEN': ''}]
+                 {'SCOUT_LIMIT': 'NaN'},
+                 {'SCOUT_HANDLES': 'a,b,c,d,e', 'SCOUT_LIMIT': '12'},
+                 {'SCOUT_HANDLES': 'https://evil.example/x'}, {'YOUTUBE_API_KEY': ''}]
         for changes in cases:
-            env = self.env()
+            env = self.env('youtube')
             env.update(changes)
             with self.subTest(changes=changes), patch.object(collect, 'request_json') as net:
                 code, result = self.run_collector(env)
@@ -54,31 +54,14 @@ class CollectorTests(unittest.TestCase):
                 self.assertEqual(result['status'], 'failed')
                 net.assert_not_called()
 
-    def test_instagram_one_bounded_batch_ours_separate_missing_metrics_null(self):
-        posts = [{'id': '1', 'ownerUsername': 'mosarmclub', 'url': 'https://instagram.com/p/1'},
-                 {'id': '2', 'ownerUsername': 'example', 'url': 'https://instagram.com/p/2',
-                  'caption': 'test-apify-secret'}]
-        with patch.object(collect, 'request_json', return_value=posts) as net:
-            code, result = self.run_collector(self.env())
-        self.assertEqual(code, 0)
-        net.assert_called_once()
-        self.assertIn('maxTotalChargeUsd=0.50', net.call_args.args[0])
-        self.assertNotIn('test-apify-secret', net.call_args.args[0])
-        self.assertEqual(len(net.call_args.kwargs['payload']['directUrls']), 2)
-        self.assertEqual(result['data']['ours'][0]['ownerUsername'], 'mosarmclub')
-        self.assertIsNone(result['data']['ours'][0]['likesCount'])
-        self.assertEqual(result['data']['competitors'][0]['caption'], '[REDACTED]')
-        self.assertIsNone(result['data']['actual_charge_usd'])
-
-    def test_apify_empty_partial_error_oversized_fail_without_retry(self):
-        cases = [[], [{'error': 'private'}], [{'ownerUsername': 'example', 'url': 'https://x'}],
-                 [{'ownerUsername': 'mosarmclub', 'url': 'https://x'}] * 51]
-        for response in cases:
-            with self.subTest(size=len(response)), patch.object(collect, 'request_json', return_value=response) as net:
-                code, result = self.run_collector(self.env())
-                self.assertEqual(code, 1)
-                self.assertNotIn('data', result)
-                net.assert_called_once()
+    def test_manual_instagram_disabled_even_for_own_profile(self):
+        env = self.env()
+        env['SCOUT_HANDLES'] = 'mosarmclub'
+        with patch.object(collect, 'request_json') as net:
+            code, result = self.run_collector(env)
+        self.assertEqual(code, 1)
+        self.assertIn('@mosarmclub', result['error'])
+        net.assert_not_called()
 
     def test_youtube_three_calls_per_channel_no_search(self):
         responses = [{'items': [{'id': 'UC1', 'statistics': {'subscriberCount': '42'},

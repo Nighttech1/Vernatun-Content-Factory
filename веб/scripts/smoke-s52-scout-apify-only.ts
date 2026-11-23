@@ -37,25 +37,10 @@ async function main() {
     "feed route docs must mention S52 / never Apify",
   );
 
-  const scoutRun = read("lib/studio/scout-run.ts");
-  assert(
-    scoutRun.includes("fetchApifyCompetitorPosts"),
-    "scout-run owns Apify",
-  );
-
   const scoutApi = read("app/api/studio/[moduleId]/scout/run/route.ts");
-  assert(scoutApi.includes("runScoutApify"), "scout API wires runScoutApify");
-
   const ui = read("components/mesh/v2/ScoutInspectorSettings.tsx");
-  assert(ui.includes('data-testid="scout-razvedat"'), "Разведать button");
-  assert(
-    ui.includes("scout-inspector-min-likes"),
-    "min likes filter in Scout UI",
-  );
-  assert(
-    ui.includes("scout-inspector-frequency-hours"),
-    "frequency hours in Scout UI",
-  );
+  assert(scoutApi.includes("browser_search_only") && !scoutApi.includes("fetch("), "legacy POST does not collect");
+  assert(ui.includes("https://www.google.com/search?") && !ui.includes("/scout/run"), "browser search is the only trend action");
 
   const workspace = read("components/studio/StudioModuleWorkspace.tsx");
   assert(
@@ -70,7 +55,6 @@ async function main() {
   const { writeScoutSnapshot, readScoutSnapshot, clearScoutSnapshotMemory } =
     await import("../lib/studio/scout-snapshot-store");
   const { resolveStudioFeed } = await import("../lib/studio/ig-live-feed");
-  const { shouldRunAutoScout } = await import("../lib/studio/scout-run");
 
   clearScoutSnapshotMemory();
   writeScoutSnapshot("carousel-engine", [
@@ -89,15 +73,6 @@ async function main() {
   assert(
     feed!.competitors.some((p) => p.id === "scout-smoke-1"),
     "feed competitors come from Scout snapshot",
-  );
-
-  assert(
-    shouldRunAutoScout(null, 12) === true,
-    "auto-scout due when never run",
-  );
-  assert(
-    shouldRunAutoScout(new Date().toISOString(), 12) === false,
-    "auto-scout not due immediately after run",
   );
 
   const snap = readScoutSnapshot("carousel-engine");

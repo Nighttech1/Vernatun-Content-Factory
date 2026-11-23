@@ -192,11 +192,6 @@ function assertEnvExample(): void {
   assert(existsSync(p), ".env.example exists");
   const text = readFileSync(p, "utf8");
   assert(text.includes("IG_SCRAPER_API_KEY"), ".env.example IG_SCRAPER_API_KEY");
-  assert(text.includes("IG_SCRAPER_BASE_URL"), ".env.example IG_SCRAPER_BASE_URL");
-  assert(
-    text.includes("APIFY_IG_MAX_RUNS_PER_HOUR"),
-    ".env.example APIFY_IG_MAX_RUNS_PER_HOUR",
-  );
   console.log("ENV_EXAMPLE_OK");
 }
 

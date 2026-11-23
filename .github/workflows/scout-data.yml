@@ -7,13 +7,13 @@ on:
       mode:
         description: 'check checks secret presence only; collection needs explicit authorization'
         type: choice
-        options: [check, youtube, instagram]
+        options: [check, youtube]
         default: check
       report_id:
         description: 'Collection report ID: S-YYYYMM-GEN-01 (or CAR/REL/ART/YTB)'
         type: string
       handles:
-        description: 'Comma-separated public handles; Instagram always includes mosarmclub'
+        description: 'Comma-separated public YouTube handles'
         type: string
         default: mosarmclub
       limit:
@@ -23,10 +23,6 @@ on:
       authorization:
         description: 'After owner authorizes research: COLLECT <report_id>. Empty for check.'
         type: string
-      apify_budget_usd:
-        description: 'Instagram maximum total charge, USD (0.01–1.00); paid/free credits may be consumed'
-        type: string
-        default: '0.50'
 
 permissions:
   contents: read
@@ -50,7 +46,6 @@ jobs:
           SCOUT_HANDLES: ${{ inputs.handles }}
           SCOUT_LIMIT: ${{ inputs.limit }}
           SCOUT_AUTHORIZATION: ${{ inputs.authorization }}
-          SCOUT_APIFY_BUDGET_USD: ${{ inputs.apify_budget_usd }}
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
           APIFY_API_KEY: ${{ secrets.APIFY_API_KEY }}
