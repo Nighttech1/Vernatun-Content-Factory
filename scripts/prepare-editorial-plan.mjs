@@ -15,7 +15,8 @@ for(const unit of plan.units){
  if(!fs.existsSync(path.join(root,unit.brief_path)))throw Error('Missing brief '+unit.id);
 }
 fs.writeFileSync(file,JSON.stringify(plan,null,2)+'\n');
-const render=spawnSync('python3',['scripts/render-editorial-report.py'],{stdio:'inherit'});if(render.status!==0)throw Error('HTML export failed');
+const renderer = Array.isArray(plan.announcements) ? 'scripts/render-publication-calendar.py' : 'scripts/render-editorial-report.py';
+const render=spawnSync('python3',[renderer],{stdio:'inherit'});if(render.status!==0)throw Error('HTML export failed');
 plan=JSON.parse(fs.readFileSync(file,'utf8'));
 plan.report_markdown=fs.readFileSync(path.join(root,folder,'vernatun_publication_plan_2026.md'),'utf8');
 // Stable ordering digest is an integrity signal, never a substitute for editorial/owner approval.
