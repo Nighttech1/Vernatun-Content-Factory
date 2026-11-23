@@ -11,7 +11,9 @@ async def render(build, executable=None):
     from playwright.async_api import async_playwright
     manifest = json.loads((build / '40-bake-manifest.json').read_text())
     # Reject changed/missing render inputs even if a previous preview looked correct.
-    required = {'NotoSerifDisplay.ttf': 'NotoSerifDisplay.ttf',
+    primary_asset = manifest.get('primary_asset','NotoSerifDisplay.ttf')
+    family = 'Glanz' if primary_asset == 'Glanz.otf' else 'Noto Serif Display'
+    required = {primary_asset: primary_asset,
                 'NotoSansArmenian.ttf': 'NotoSansArmenian.ttf'}
     for slide in manifest['slides']:
         required[f'background-{slide["slide"]:02d}.png'] = slide['background']
@@ -44,7 +46,7 @@ async def render(build, executable=None):
                 n = slide['slide']
                 await page.goto((build / f'slide-{n:02d}.html').as_uri())
                 await page.evaluate('document.fonts.ready')
-                checks = await page.evaluate('''() => {
+                checks = await page.evaluate('''family => {
                   const rect = el => { const r=el.getBoundingClientRect();
                     return {x:r.x,y:r.y,w:r.width,h:r.height}; };
                   const lines=[...document.querySelectorAll('.card > div')];
@@ -54,7 +56,7 @@ async def render(build, executable=None):
                       a.x<b.x-1 || a.right>b.right+1 || a.y<b.y-1 || a.bottom>b.bottom+1;
                   });
                   const fontFaces=[...document.fonts].map(f=>({family:f.family,status:f.status}));
-                  const fontReady=['Noto Serif Display','Noto Sans Armenian'].every(name =>
+                  const fontReady=[family,'Noto Sans Armenian'].every(name =>
                     fontFaces.some(f=>f.family.replaceAll(/['"]/g,'')===name && f.status==='loaded'));
                   return {badLines:bad.map(el=>el.textContent),fontReady,fontFaces,
                     texts:lines.map(el=>el.textContent),
@@ -65,11 +67,11 @@ async def render(build, executable=None):
                     arrows:document.querySelectorAll('.arrow').length,
                     imagesLoaded:[...document.images].every(im=>im.complete&&im.naturalWidth>0),
                     body:rect(document.body)};
-                }''')
+                }''', family)
                 # Cover/CTA use no Armenian text but the face must be loadable explicitly.
                 if not checks['fontReady']:
-                    await page.evaluate("Promise.all([document.fonts.load('900 32px \"Noto Serif Display\"'),document.fonts.load('700 32px \"Noto Sans Armenian\"')])")
-                    checks['fontReady'] = await page.evaluate("document.fonts.check('900 32px \"Noto Serif Display\"') && document.fonts.check('700 32px \"Noto Sans Armenian\"')")
+                    await page.evaluate("family => Promise.all([document.fonts.load('400 32px '+JSON.stringify(family)),document.fonts.load('700 32px \"Noto Sans Armenian\"')])", family)
+                    checks['fontReady'] = await page.evaluate("family => document.fonts.check('400 32px '+JSON.stringify(family)) && document.fonts.check('700 32px \"Noto Sans Armenian\"')", family)
                 expected_cards = 3 if 2 <= n <= 6 else 0
                 assert not checks['badLines'], f'TEXT_OVERFLOW slide {n}: {checks["badLines"]}'
                 assert checks['fontReady'], f'FONT_PRIMARY_MISSING slide {n}'

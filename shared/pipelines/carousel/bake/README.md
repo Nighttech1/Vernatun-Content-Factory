@@ -10,6 +10,8 @@
 - case-v3.json — исторический replay-fixture с 15 фразами, координатами и хешами 11 входов. Не production-ID/brief. Для новой карусели создать новый JSON по своему брифу; не исправлять исторический fixture.
 - test_contract.py — негативные guards.
 
+Для новых production jobs укажите `family: Glanz`, `path: Glanz.otf` и SHA-256 из `shared/brand/fonts/vernatun-fonts.json`. В каталог входов скопируйте оригинальный OTF.
+
 ## Входы и зависимости
 
 Git не содержит PNG/ZIP/font копий. Для точного воспроизведения владелец имеет пакет `vernatun-type1-step4-v3.zip` (точное имя в case-v3.json; Library ID указан там). Развернуть архив и передать его assets/ как --asset-root. Для новой работы собрать собственный assets/ и записать фактические SHA256. Не отключать проверку хешей ради запуска. Никогда не переносить секреты или временные private URLs в Git.

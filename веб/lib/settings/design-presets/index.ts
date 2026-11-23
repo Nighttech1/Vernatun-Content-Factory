@@ -170,10 +170,10 @@ export const SEED_DARK_NOTES_PRESET: DesignPresetFile = {
     accentSoft: "rgba(245, 215, 66, 0.35)",
   },
   typography: {
-    display: "Geist Sans, Manrope, system-ui, sans-serif",
-    body: "Geist Mono, ui-monospace, monospace",
+    display: "Glanz, Noto Sans Armenian, sans-serif",
+    body: "Glanz, Noto Sans Armenian, sans-serif",
     mono: "Geist Mono, ui-monospace, monospace",
-    armenianSafe: "Noto Sans Armenian, Manrope, sans-serif",
+    armenianSafe: "Glanz, Noto Sans Armenian, sans-serif",
     scale: { cover: 56, h2: 36, body: 22, caption: 16 },
   },
   components: {
@@ -216,10 +216,10 @@ export const SEED_BENTO_GLASS_PRESET: DesignPresetFile = {
     accentSoft: "rgba(245, 158, 11, 0.32)",
   },
   typography: {
-    display: "Geist Sans, Manrope, system-ui, sans-serif",
-    body: "Manrope, system-ui, sans-serif",
+    display: "Glanz, Noto Sans Armenian, sans-serif",
+    body: "Glanz, Noto Sans Armenian, sans-serif",
     mono: "Geist Mono, ui-monospace, monospace",
-    armenianSafe: "Noto Sans Armenian, Manrope, sans-serif",
+    armenianSafe: "Glanz, Noto Sans Armenian, sans-serif",
     scale: { cover: 52, h2: 32, body: 20, caption: 14 },
   },
   components: {

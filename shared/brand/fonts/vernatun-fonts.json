@@ -3,42 +3,33 @@
   "project": "vernatun",
   "source_of_truth": "projects/vernatun/brand/design.md",
   "primary": {
-    "family": "Noto Serif Display",
+    "family": "Glanz",
     "style": "normal",
-    "default_weight": 900,
-    "named_weight": "Black",
-    "asset": "shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf",
-    "license": "shared/brand/fonts/OFL-NotoSerifDisplay.txt",
-    "sha256": "4b661adcf6a5d38bf5befdc4d976e8a7238a4aeb57e62c1c1a67775380a09df9",
-    "axes": {
-      "wght": [
-        100,
-        900
-      ],
-      "wdth": [
-        62.5,
-        100
-      ]
-    }
+    "default_weight": 400,
+    "named_weight": "Regular",
+    "asset": "shared/brand/fonts/Glanz.otf",
+    "license": "shared/brand/fonts/Glanz-License.txt",
+    "sha256": "ce1e7aaae4572087f96b53b844bcb385767e62de794038a8bc7ef9a7643891c4",
+    "italic_asset": "shared/brand/fonts/Glanz-Italic.otf"
   },
   "roles": {
     "headline": {
-      "weight": 900
+      "weight": 400
     },
     "hook": {
-      "weight": 900
+      "weight": 400
     },
     "cta": {
-      "weight": 900
+      "weight": 400
     },
     "schedule_title": {
-      "weight": 900
+      "weight": 400
     },
     "date": {
-      "weight": 700
+      "weight": 400
     },
     "subheading": {
-      "weight": 600
+      "weight": 400
     }
   },
   "utility_sans": {
@@ -54,5 +45,9 @@
     "source": "approved asset",
     "retype_with_primary": false
   },
-  "failure_code": "FONT_PRIMARY_MISSING"
+  "failure_code": "FONT_PRIMARY_MISSING",
+  "armenian": {
+    "family": "Noto Sans Armenian",
+    "reason": "Glanz contains no Armenian glyphs"
+  }
 }

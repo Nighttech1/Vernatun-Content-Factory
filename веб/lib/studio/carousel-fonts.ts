@@ -98,6 +98,9 @@ export function parseDesignFonts(
     md.match(/content\s*[:=]\s*["']?([^"'\n,]+)/i)?.[1]?.trim() ||
     "";
 
+  if (preset.components.logoMark === "vernatun_pomegranate") {
+    return { title: "Glanz, Noto Sans Armenian, sans-serif", body: "Glanz, Noto Sans Armenian, sans-serif", content: "Noto Sans Armenian, Glanz, sans-serif" };
+  }
   const title =
     (preset.typography.display || mdDisplay || "Cormorant Garamond").trim();
   const body = (preset.typography.body || mdBody || "Manrope").trim();
@@ -209,7 +212,7 @@ export async function ensureCarouselFonts(input: {
       (f) => `@font-face {
   font-family: "${f.familyName}";
   src: url("${f.localWoff2Url}") format("woff2");
-  font-weight: 400 700;
+  font-weight: ${f.familyName === "Glanz" ? "400" : "400 700"};
   font-style: normal;
   font-display: block;
 }`,

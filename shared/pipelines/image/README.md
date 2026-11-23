@@ -27,9 +27,9 @@
 ## Контракт типографики
 
 Все модули изображений читают типографику из `projects/vernatun/brand/design.md`.
-Главный шрифт: **Noto Serif Display Black 900**; asset:
-`shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf`. Заголовки, hook и CTA
-рендерятся весом `900`; отсутствие asset возвращает `FONT_PRIMARY_MISSING`.
+Главный шрифт: **Glanz Regular 400**; asset:
+`shared/brand/fonts/Glanz.otf`. Заголовки, hook и CTA
+рендерятся весом `400`; отсутствие asset возвращает `FONT_PRIMARY_MISSING`.
 Montserrat не используется как замена главного шрифта.
 
 ## Контракт финиш-арта

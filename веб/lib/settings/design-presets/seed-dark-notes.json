@@ -12,10 +12,10 @@
     "accentSoft": "rgba(245, 215, 66, 0.35)"
   },
   "typography": {
-    "display": "Geist Sans, Manrope, system-ui, sans-serif",
-    "body": "Geist Mono, ui-monospace, monospace",
+    "display": "Glanz, Noto Sans Armenian, sans-serif",
+    "body": "Glanz, Noto Sans Armenian, sans-serif",
     "mono": "Geist Mono, ui-monospace, monospace",
-    "armenianSafe": "Noto Sans Armenian, Manrope, sans-serif",
+    "armenianSafe": "Glanz, Noto Sans Armenian, sans-serif",
     "scale": { "cover": 56, "h2": 36, "body": 22, "caption": 16 }
   },
   "components": {

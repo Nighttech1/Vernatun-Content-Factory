@@ -16,9 +16,9 @@
 
 ## Canonical typography
 
-- Main Vernatun font: **Noto Serif Display Black 900**.
-- Load only `shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf` and set `font-weight: 900` for hook, headline and final CTA.
-- Dates/subheads use the same family at `600–700`.
+- Main Vernatun font: **Glanz Regular 400**.
+- Load only `shared/brand/fonts/Glanz.otf` and set `font-weight: 400` for hook, headline and final CTA.
+- Dates/subheads use the same family at `400`.
 - Missing primary font or silent system fallback = `FONT_PRIMARY_MISSING` and mandatory return to Bake.
 
 ## Mandatory reject conditions

@@ -14,19 +14,9 @@
 
 ## Типографика
 
-### Главный шрифт Vernatun — Noto Serif Display Black
+### Glanz
 
-- Единый главный шрифт всех публичных визуальных модулей Vernatun: **Noto Serif Display**.
-- Каноническое начертание для заголовков, hook, CTA и названий афиш: **Black 900**.
-- Канонический репозиторный asset: `shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf`; ось `wght` обязательно устанавливается в `900`.
-- Машиночитаемый контракт: `shared/brand/fonts/vernatun-fonts.json`.
-- Подзаголовки, даты и расписания используют ту же семью с весом `600–700`; основной выразительный заголовок всегда `900`.
-- CSS-токен: `--vernatun-font-primary: "Noto Serif Display"`; CSS для заголовка: `font-family: var(--vernatun-font-primary); font-weight: 900;`.
-- Модуль не имеет права молча заменять primary системным шрифтом. Если asset не загрузился, итоговый render получает `FONT_PRIMARY_MISSING` и возвращается на исправление.
-- Montserrat остаётся только служебным sans-serif для мелких интерфейсных подписей. Он **не является** главным шрифтом визуального контента.
-- Фирменный локап `VERNATUN / ARMENIAN CLUB` не перенабирается главным шрифтом: используется утверждённый logo asset.
-- Армянские вставки — Noto Sans Armenian; если конкретное начертание недоступно, выбирается ближайший читаемый Armenian fallback, фиксируется в manifest и проверяется на полном размере.
-- Текстовые карточки используют осознанную шкалу размеров и компактный padding; размер карточки определяется содержимым, а не наоборот.
+Для новых каруселей, анонсов, афиш, роликов, карточек слов и Telegram Mini App используйте **Glanz Regular** (400). Курсив — Glanz Italic. Файлы шрифтов и лицензия находятся в `shared/brand/fonts/`. Контракт — `shared/brand/fonts/vernatun-fonts.json`. Армянские символы набирайте Noto Sans Armenian. Готовый логотип используйте как изображение. При вёрстке проверяйте переносы и читаемость на телефоне.
 
 ## Канонический логотип
 - Единственный актуальный растровый asset из утверждённого референса: `shared/brand/assets/vernatun-logo-reference.png`.
@@ -66,6 +56,3 @@
 - помещать текстовые карточки поверх главной героини;
 - использовать вложенные блоки или AI-подложки под HTML-текст;
 - использовать маленькую hook/final-типографику, незаметную в ленте.
-
-## Reels-only typography exception — owner-approved 2026-11-21
-Primary **color-accent text**: Measure by Iomaio / Measure Regular. Secondary **ordinary non-accent text**: AA Logotyper Regular. This overrides older single Bebas Neue prescriptions for Reels. The main Noto Serif Display Black brand font still governs carousels and non-Reels visual modules as already specified. Do not blindly apply Reel fonts to the website, graphics or carousel layouts. Both uploaded typefaces contain Cyrillic glyphs needed by the approved dance reel; manually verify every Armenian glyph if Armenian script is introduced. Refer to `projects/vernatun/departments/reel/README.md` for actual source file and licensing boundaries.

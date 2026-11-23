@@ -1,3 +1,4 @@
+import { clubFontCss } from "./club-font-css";
 /**
  * Mode B: after AI full-slide (or exact user photo), composite Vernatun
  * logo + name. Default chrome = bare (no plaque / no glass bar).
@@ -75,21 +76,21 @@ export async function applyModeBBrandChrome(
 </div>`
       : "";
 
-  const html = `<!doctype html><html><head><meta charset="utf-8"><style>
+  const html = `<!doctype html><html><head><meta charset="utf-8"><style>${clubFontCss()}
 *{box-sizing:border-box;margin:0;padding:0}
 body{width:${FRAME_W}px;height:${FRAME_H}px;overflow:hidden;background:#000}
 .slide{position:relative;width:${FRAME_W}px;height:${FRAME_H}px}
 .slide>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .shade{position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.22) 45%,rgba(0,0,0,.12) 100%);z-index:1;pointer-events:none}
 .hook{position:absolute;z-index:4;left:48px;top:120px;right:110px;max-width:920px;color:#fff;
-  font-family:Arial,Helvetica,sans-serif;text-shadow:0 3px 18px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.95)}
+  font-family:'Glanz','Noto Sans Armenian',sans-serif;text-shadow:0 3px 18px rgba(0,0,0,.85),0 1px 3px rgba(0,0,0,.95)}
 .hook h1{font-size:64px;line-height:1.08;font-weight:900;letter-spacing:-1px}
 .hook h1 .accent{color:#F58220}
 .hook .sub{margin-top:18px;font-size:26px;line-height:1.3;font-weight:600;max-width:720px}
 .brand{
   position:absolute;z-index:5;display:flex;align-items:center;gap:14px;
   max-width:72%;color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+  font-family:'Glanz','Noto Sans Armenian',sans-serif;
 }
 .brand.bare{
   background:transparent;border:none;padding:0;
@@ -133,6 +134,7 @@ body{width:${FRAME_W}px;height:${FRAME_H}px;overflow:hidden;background:#000}
       deviceScaleFactor: 1,
     });
     await page.setContent(html, { waitUntil: "load", timeout: 60_000 });
+    await page.evaluate(() => document.fonts.ready.then(() => true));
     await page.locator(".slide").first().screenshot({
       path: input.outPngPath,
       type: "png",

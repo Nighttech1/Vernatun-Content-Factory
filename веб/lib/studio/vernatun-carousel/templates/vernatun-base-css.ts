@@ -1,3 +1,4 @@
+import { clubFontCss } from "../club-font-css";
 /**
  * Vernatun layout CSS — Design colors only.
  * Freedom modes: brand bare/float/bar; text on-photo/scrim/panel.
@@ -11,7 +12,7 @@ export function vernatunBaseCss(vars: {
 }): string {
   const { panel, ink, accent, pageBg } = vars;
   const onPhoto = "#F7F4EF";
-  return `*{box-sizing:border-box}html,body{margin:0;background:${pageBg};color:${ink};font-family:Arial,Helvetica,sans-serif}
+  return `${clubFontCss()}*{box-sizing:border-box}html,body{margin:0;background:${pageBg};color:${ink};font-family:'Glanz','Noto Sans Armenian',sans-serif}
 .slide{position:relative;width:1080px;height:1350px;overflow:hidden;background:${panel};isolation:isolate;--counter-scale:1;--logo-scale:1;--panel-width:62%}
 .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
 .shade{position:absolute;inset:0;background:rgba(0,0,0,.22);z-index:-1}

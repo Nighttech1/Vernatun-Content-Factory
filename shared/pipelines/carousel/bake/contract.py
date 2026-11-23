@@ -48,9 +48,15 @@ def validate_job(job, asset_root, check_assets=True):
     require(job['style']['arrow']['final_slide'] is False, 'FINAL_ARROW: forbidden')
     rgba = job['style']['card_rgba']
     require(len(rgba) == 4 and all(0 <= v <= 1 for v in rgba), 'CARD_RGBA')
-    require(job['fonts']['primary']['family'] == 'Noto Serif Display', 'FONT_PRIMARY_MISSING')
+    primary = job['fonts']['primary']
+    if kind == 'production':
+        require(job['asset_hashes'].get('Glanz.otf') == 'ce1e7aaae4572087f96b53b844bcb385767e62de794038a8bc7ef9a7643891c4', 'FONT_PRIMARY_HASH')
+    families = {'Glanz': 'Glanz.otf'}
+    if kind == 'replay-fixture':
+        families['Noto Serif Display'] = 'NotoSerifDisplay.ttf'
+    require(primary['family'] in families, 'FONT_PRIMARY_MISSING')
     require(job['fonts']['armenian']['family'] == 'Noto Sans Armenian', 'FONT_ARMENIAN_MISSING')
-    require(job['fonts']['primary']['path'] == 'NotoSerifDisplay.ttf' and
+    require(primary['path'] == families[primary['family']] and
             job['fonts']['armenian']['path'] == 'NotoSansArmenian.ttf', 'FONT_INPUT_NAMES')
     require(logo['width'] == 160, 'LOGO_WIDTH: current approved replay contract is 160 px')
     require(logo['dark_asset'] == 'logo-dark.png' and logo['light_asset'] == 'logo-light.png',

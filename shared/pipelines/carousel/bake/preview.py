@@ -30,6 +30,7 @@ parser.add_argument('--asset-root',type=Path,required=True)
 parser.add_argument('--output',type=Path,required=True)
 args=parser.parse_args()
 CASE=json.loads(args.job.read_text())
+primary = CASE["fonts"]["primary"]
 INPUT_HASHES=validate_job(CASE,args.asset_root)
 ROOT=args.output.resolve();ROOT.mkdir(parents=True,exist_ok=True)
 AS=args.asset_root.resolve()
@@ -53,6 +54,7 @@ def rr(c,x,y,w,h,r):
 def text_layout(c,t,family,size,weight):
     lp=PC.pango_cairo_create_layout(context_ptr(c));d=PL.pango_font_description_new()
     PL.pango_font_description_set_family(d,family.encode());PL.pango_font_description_set_absolute_size(d,size*1024);PL.pango_font_description_set_weight(d,int(weight))
+    if family=='Glanz': PL.pango_font_description_set_weight(d,400)
     if family=='Noto Serif Display':PL.pango_font_description_set_variations(d,('wght='+str(int(weight))+',wdth=100').encode())
     PL.pango_layout_set_font_description(lp,d);PL.pango_layout_set_text(lp,t.encode(),-1)
     assert PL.pango_layout_get_unknown_glyphs_count(lp)==0,('missing glyph',t)
@@ -81,8 +83,9 @@ for n,name in enumerate(backgrounds,1):
         base=CASE['typography']['large' if h>=130 else 'compact']
         layouts=[]
         for j,t in enumerate(texts):
-            size=base[j];family='Noto Sans Armenian' if j==0 else 'Noto Serif Display'
+            size=base[j];family='Noto Sans Armenian' if j==0 else primary['family']
             weight=Pango.Weight.BOLD if j==0 or j==2 else Pango.Weight.SEMIBOLD
+            if family == "Glanz": weight = Pango.Weight.NORMAL
             l=text_layout(c,t,family,size,weight)
             while l.get_pixel_size()[0]>w-34 and size>23:
                 size-=0.5;l=text_layout(c,t,family,size,weight)
@@ -143,23 +146,24 @@ for n,name in enumerate(backgrounds,1):
     arrow=(f'<svg class="arrow" viewBox="0 0 100 60"><path style="stroke:{arrow_style["edge"]};stroke-width:13" d="M12 25 C35 42 62 36 82 19 M63 16 L84 17 L81 38"/><path style="stroke:{arrow_style["main"]};stroke-width:9" d="M12 25 C35 42 62 36 82 19 M63 16 L84 17 L81 38"/></svg>') if n<7 else ''
     body=''.join(parts)+f'<div class="logo"><img src="assets/{logo_name}"></div>'+arrow
     html_doc='''<!doctype html><html lang="ru"><meta charset="utf-8"><style>
-@font-face{font-family:'Noto Serif Display';src:url('assets/NotoSerifDisplay.ttf');font-weight:100 900}
+@font-face{font-family:'PRIMARY_FAMILY';src:url('assets/PRIMARY_ASSET');font-weight:PRIMARY_WEIGHT}
 @font-face{font-family:'Noto Sans Armenian';src:url('assets/NotoSansArmenian.ttf');font-weight:100 900}
 *{box-sizing:border-box}body{margin:0;width:1080px;height:1350px;overflow:hidden;background:#eee}main{position:relative;width:1080px;height:1350px;background-size:100% 100%}
 .card{position:absolute;border-radius:20px;background:rgba(138,56,31,.91);color:#fffaf0}.card>div+div{margin-top:6px}
 .logo{position:absolute;left:866px;top:54px;width:160px;height:157.52px;overflow:hidden}.logo img{position:absolute;width:278.80px;height:173.48px;left:-58.08px;top:-4.49px}
 .arrow{position:absolute;left:894px;top:1208px;width:100px;height:60px;overflow:visible}.arrow path{fill:none;stroke-linecap:round;stroke-linejoin:round}
 </style><main style="background-image:url('assets/background-NN.png')">BODY</main></html>'''.replace('NN',f'{n:02d}').replace('BODY',body)
-    (ROOT/f'slide-{n:02d}.html').write_text(html_doc)
+    (ROOT/f'slide-{n:02d}.html').write_text(html_doc.replace('PRIMARY_FAMILY',primary['family']).replace('PRIMARY_ASSET',primary['path']).replace('PRIMARY_WEIGHT','400' if primary['family']=='Glanz' else '100 900'))
 
 # Contact sheet is a rendering of the actual final composite files.
 sheet=cairo.ImageSurface(cairo.FORMAT_ARGB32,1440,1000);c=cairo.Context(sheet);c.set_source_rgb(.96,.94,.90);c.paint()
 for i in range(7):
     col,row=i%4,i//4;im=cairo.ImageSurface.create_from_png(str(OUT/f'slide-{i+1:02d}.png'))
     c.save();c.translate(col*360+15,row*500+12);c.scale(330/1080,412.5/1350);c.set_source_surface(im,0,0);c.paint();c.restore()
-    l=text_layout(c,f'{i+1:02d}', 'Noto Serif Display',23,Pango.Weight.BOLD);c.set_source_rgb(.25,.15,.1);c.move_to(col*360+15,row*500+435);show_layout(c,l)
+    l=text_layout(c,f'{i+1:02d}', primary['family'],23,Pango.Weight.NORMAL);c.set_source_rgb(.25,.15,.1);c.move_to(col*360+15,row*500+435);show_layout(c,l)
 sheet.write_to_png(str(OUT/'contact-sheet.png'))
-manifest={'stage':'4-bake','status':'PREVIEW_RENDERED_CANONICAL_RENDER_BLOCKED','renderer':'Cairo/Pango deterministic compositing; Chromium launch blocked by environment socket permissions','dimensions':[1080,1350],'font_primary':'Noto Serif Display from current repository, variable weight as specified per line','font_armenian':'Noto Sans Armenian from repository','font_contract_sha_mismatch':True,'telegram_url':'https://t.me/mosarmclub','slides':manifests,'technical_checks':['seven PNGs 1080x1350','three cards on each of five middle slides','three nonempty lines per card','all line widths measured before rendering','no text clipping in measured card bounds','canonical logo added on every slide','arrows on slides 1-6 only','no logo contrast panels'],'publication':'not authorized; not performed'}
+manifest={'stage':'4-bake','status':'PREVIEW_RENDERED_CANONICAL_RENDER_BLOCKED','renderer':'Cairo/Pango deterministic compositing; Chromium launch blocked by environment socket permissions','dimensions':[1080,1350],'font_primary':primary['family'],'font_armenian':'Noto Sans Armenian from repository','font_contract_sha_mismatch':True,'telegram_url':'https://t.me/mosarmclub','slides':manifests,'technical_checks':['seven PNGs 1080x1350','three cards on each of five middle slides','three nonempty lines per card','all line widths measured before rendering','no text clipping in measured card bounds','canonical logo added on every slide','arrows on slides 1-6 only','no logo contrast panels'],'publication':'not authorized; not performed'}
+manifest['primary_asset']=primary['path']
 manifest['version']=CASE['version']
 manifest['cta']=CASE['cta']
 manifest['font_contract_sha_mismatch']=CASE.get('font_contract_sha_mismatch',False)

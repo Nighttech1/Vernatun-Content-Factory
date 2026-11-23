@@ -31,11 +31,8 @@ description: Produce Vernatun Telegram visuals through a scenario prompt, genera
 
 ## Типографический стандарт
 
-- Основной шрифт расписаний: **Noto Serif Display**.
-- Характер: high-contrast Cyrillic Didone serif, editorial.
-- Ориентиры при генерации: Didot, Bodoni, Prata.
-- Резервный deterministic stack:
-  `"Noto Serif Display", "Bodoni Moda", "Prata", "Cormorant Garamond", Georgia, serif`.
+- Основной шрифт расписаний: **Glanz**.
+- Текст набирается из файла `shared/brand/fonts/Glanz.otf`. Для армянских букв подключается Noto Sans Armenian.
 - Фирменный локап `VERNATUN / ARMENIAN CLUB` остаётся отдельным
   sans-serif элементом и не наследует шрифт расписания.
 - Основной текст никогда не исправляется на стадии Bake.

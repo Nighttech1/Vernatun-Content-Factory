@@ -81,7 +81,7 @@
 
 ## 5. Слабые места для решения клиента
 
-1. **Шрифт — РЕШЕНО владельцем 2026-11-13:** единый primary — **Noto Serif Display Black 900** из `shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf`; Helvetica/Arial/Montserrat запрещены как silent primary fallback.
+1. **Шрифт — РЕШЕНО владельцем 2026-11-13:** единый primary — **Glanz Regular 400** из `shared/brand/fonts/Glanz.otf`; Helvetica/Arial/Montserrat запрещены как silent primary fallback.
 2. **Рендерер — РЕШЕНО:** канонический финальный renderer — Puppeteer/Chromium; ImageMagick только вспомогательный.
 3. **Bake-роли:** существуют finish-art-director и telegram-graphics-bake; для carousel нужен один канонический bake prompt.
 4. **Pose/eye QA — РЕШЕНО:** pose fingerprint создаётся после генерации; точные повторы запрещены, повтор ракурса допускается при другой позе/действии.

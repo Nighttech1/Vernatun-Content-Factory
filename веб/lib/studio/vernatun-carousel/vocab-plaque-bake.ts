@@ -1,3 +1,4 @@
+import { clubFontCss } from "./club-font-css";
 /**
  * B4.5 — Exact HY—RU vocab pill via HTML/Playwright (not GPT glyphs).
  * GPT (as layout AD) freely places ONE empty dashed VOCAB_SLOT by composition;
@@ -98,7 +99,7 @@ export async function renderVocabPlaquePng(input: {
   const canvasH = h + 24;
 
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/>
-<style>
+<style>${clubFontCss()}
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Armenian:wght@600;700&family=Manrope:wght@600;700&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{
@@ -113,7 +114,7 @@ html,body{
   border-radius:${Math.floor(h / 2)}px;
   background:${accent};
   box-shadow:0 6px 18px rgba(0,0,0,.28);
-  font-family:"Noto Sans Armenian","Manrope",sans-serif;
+  font-family:"Glanz","Noto Sans Armenian",sans-serif;
   font-weight:700;
   font-size:${fontSize}px;
   letter-spacing:0.02em;
@@ -136,6 +137,7 @@ html,body{
       deviceScaleFactor: 1,
     });
     await page.setContent(html, { waitUntil: "load", timeout: 60_000 });
+    await page.evaluate(() => document.fonts.ready.then(() => true));
     // Wait fonts so Armenian glyphs measure correctly
     await page.evaluate(async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

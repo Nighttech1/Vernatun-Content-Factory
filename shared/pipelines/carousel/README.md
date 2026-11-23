@@ -32,7 +32,7 @@
 - Текстовая карточка компактна и определяется текстом. Не допускается плашка, визуально в 1.5 раза превышающая содержимое без документированной причины.
 - Нельзя вкладывать одну плашку в другую. Один текстовый блок = один контейнер.
 - Плашки и текст не перекрывают лицо, руки или главный жест героини.
-- Главный шрифт: `shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf`, Noto Serif Display Black 900. Montserrat — только utility sans; Noto Sans Armenian — армянский текст. Silent fallback запрещён.
+- Главный шрифт: `shared/brand/fonts/Glanz.otf`, Glanz Regular 400. Montserrat — только utility sans; Noto Sans Armenian — армянский текст. Silent fallback запрещён.
 
 ## Обязательная цепочка
 

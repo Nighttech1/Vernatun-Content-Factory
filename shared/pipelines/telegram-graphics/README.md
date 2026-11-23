@@ -24,18 +24,14 @@
 
 - точный текст, даты, время, CTA и `@mosarmclub`;
 - сюжет, палитру и отдельную композиционную идею;
-- основной шрифт расписаний: **Noto Serif Display Black 900** — высококонтрастная
-  кириллическая Didone-антиква;
-- если генератор не понимает название шрифта: формулировку
-  «high-contrast Cyrillic Didone serif, editorial, in the spirit of
-  Didot/Bodoni/Prata»;
+- основной шрифт расписаний — **Glanz Regular**. Для точного начертания используйте локальный файл при вёрстке;
 - запрет больших пустых панелей: площадь блока соответствует объёму текста;
 - требование не копировать layout и палитру референса.
 
 Для финального HTML-render используется репозиторный asset
-`shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf` с `font-weight: 900` для
+`shared/brand/fonts/Glanz.otf` с `font-weight: 400` для
 главных заголовков. Silent fallback запрещён; отсутствие asset = `FONT_PRIMARY_MISSING`.
-Резервный preview-stack: `"Noto Serif Display", "Bodoni Moda", "Prata", serif`.
+Резервный preview-stack: `"Glanz", "Noto Sans Armenian", sans-serif`.
 Он не применяется к фирменному локапу `VERNATUN`.
 
 Промпт не содержит слов или инструкций про логотип, его расположение, будущий

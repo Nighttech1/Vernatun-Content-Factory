@@ -14,11 +14,11 @@ description: Единый бренд-композитор обоих проек�
 - Работает детерминированно, без генерации текста и логотипа в AI-фоне.
 
 ## Типографика
-- Главный шрифт Vernatun: **Noto Serif Display Black 900**.
-- Канонический asset: `shared/brand/fonts/NotoSerifDisplay[wdth,wght].ttf`.
+- Главный шрифт Vernatun: **Glanz Regular 400**.
+- Канонический asset: `shared/brand/fonts/Glanz.otf`.
 - Машиночитаемый контракт: `shared/brand/fonts/vernatun-fonts.json`.
-- Заголовки, hook и CTA: `font-family: "Noto Serif Display"; font-weight: 900`.
-- Даты и подзаголовки: та же семья, вес `600–700`.
+- Заголовки, hook и CTA: `font-family: "Glanz"; font-weight: 400`.
+- Даты и подзаголовки: та же семья, вес `400`.
 - Montserrat допустим только как служебный sans-serif; он не заменяет primary.
 - Фирменный logo wordmark не перенабирается: используется утверждённый asset.
 - Армянский: Noto Sans Armenian.
