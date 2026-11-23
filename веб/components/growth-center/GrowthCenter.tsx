@@ -7,6 +7,7 @@ import { WORKSPACE_STAGE_IDS, getStageCards, type WorkspaceStageId, type BoardCo
 import { useGrowthWorkspace } from "./useGrowthWorkspace";
 import { WorkspaceBoard } from "./WorkspaceBoard";
 import { WorkspaceCardDialog } from "./WorkspaceCardDialog";
+import { EditorialPlan } from "./EditorialPlan";
 import { WeeklyChart } from "./WeeklyChart";
 import styles from "./workspace.module.css";
 
@@ -46,6 +47,7 @@ export function GrowthCenter({ dataset }: { dataset: GrowthCenterDataset }) {
     {error && <div className={styles.error} role="alert">{error}{!view && <button type="button" className={styles.textButton} onClick={() => { void workspace.refresh().then(workspace.clearError).catch(() => {}); }}>Повторить загрузку</button>}</div>}
     {notice && <p className={styles.notice} role="status">{notice}</p>}
 
+    {mode === "plan" && view?.editorial && <EditorialPlan editorial={view.editorial} weekKey={view.weekKey} />}
     <section className={styles.funnel} aria-label="Этапы пути участника" data-testid="growth-center-funnel">
       {WORKSPACE_STAGE_IDS.map((id, index) => {
         const item = dataset.stages.find((entry) => entry.id === id)!;

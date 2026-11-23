@@ -1,5 +1,5 @@
 import { createEditorialSource, type EditorialSource } from "./editorial-source";
-import { createEditorialReconciler, editorialViewData } from "./editorial-store";
+import { createEditorialReconciler, editorialViewData, retiredEditorialCards } from "./editorial-store";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { createHash, randomUUID } from "node:crypto";
@@ -185,7 +185,8 @@ export function workspaceView(state: WorkspaceState, capabilities: WorkspaceCapa
   const git = !capabilities.gitConfigured ? { state: "not_configured" as const, commitSha: null, message: "На сервере сохранено; GitHub не настроен." } : failed ? { state: "error" as const, commitSha: null, message: "Не все резервные копии или запросы Скауту отправлены в GitHub. Повтори отправку." } : latest && !pending ? { state: "synced" as const, commitSha: latest.commitSha, message: "Все отправки подтверждены; указан commit последней резервной копии." } : { state: "pending" as const, commitSha: null, message: "GitHub ожидает отправки." };
   const prepared = preparedViewData(state), editorial = editorialViewData(state);
   const seedCards = new Map(initialState(getGrowthCenterData(), now).cards.map(c => [c.id, c]));
-  const activeCardIds = editorial ? [...new Set([...prepared.activeCardIds, ...editorial.plan.units.map(u => u.id), ...state.cards.filter(c => { const baseline = seedCards.get(c.id); return !baseline || c.publication !== null || c.column !== baseline.column || preparedCardFingerprint(c) !== preparedCardFingerprint(baseline); }).map(c => c.id)])] : prepared.activeCardIds;
+  const retired = retiredEditorialCards(state);
+  const activeCardIds = editorial ? [...new Set([...prepared.activeCardIds, ...editorial.plan.units.map(u => u.id), ...state.cards.filter(c => { if (retired?.has(c.id)) return false; const baseline = seedCards.get(c.id); return !baseline || c.publication !== null || c.column !== baseline.column || preparedCardFingerprint(c) !== preparedCardFingerprint(baseline); }).map(c => c.id)])] : prepared.activeCardIds;
   return { version: 1, revision: state.revision, weekKey: key, counts: fact?.counts ?? emptyCounts(), countSource: fact?.source ?? "Измерения текущей недели ещё не внесены.", cards: state.cards, snapshots: state.snapshots, scoutRequests: state.scoutRequests, git, capabilities, ...prepared, activeCardIds, ...(editorial ? { editorial } : {}) };
 }
 let defaultStore: WorkspaceStore | undefined;

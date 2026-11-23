@@ -8,6 +8,8 @@ import { preparedCardFingerprint, writePreparedAtomic } from "./workspace-prepar
 import type { WorkspaceState } from "./workspace-store";
 const metadataSchema = z.object({ version: z.literal(1), digest: z.string().nullable(), sequence: z.number().int().nonnegative(), appliedAt: z.string().nullable(), entries: z.record(z.string(), z.string()) }).strict();
 type Metadata = z.infer<typeof metadataSchema>;
+const retired = new WeakMap<WorkspaceState, Set<string>>();
+export function retiredEditorialCards(state: WorkspaceState) { return retired.get(state); }
 const views = new WeakMap<WorkspaceState, EditorialView>();
 export function editorialViewData(state: WorkspaceState) { return views.get(state); }
 export function createEditorialReconciler(directory: string, now: () => Date) {
@@ -46,6 +48,8 @@ export function createEditorialReconciler(directory: string, now: () => Date) {
         await writePreparedAtomic(journalFile, { beforeExists, beforeHash: preparedSha256(state), afterHash: preparedSha256(target), after: target, metadata: meta });
         await writePreparedAtomic(metadataFile, meta); await persist(target); await fs.unlink(journalFile);
       }
+      const current = new Set(source.plan.units.map(u => u.id));
+      retired.set(target, new Set(target.cards.filter(c => !current.has(c.id) && c.publication === null && c.column === "task" && meta.entries[c.id] === preparedCardFingerprint(c)).map(c => c.id)));
       views.set(target, { ...source, appliedAt: meta.appliedAt, conflicts });
       return target;
     },

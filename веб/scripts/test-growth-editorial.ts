@@ -18,7 +18,7 @@ async function main() {
   const caps = { authConfigured: true, authenticated: true, writeEnabled: true, gitConfigured: false, schedulerEnabled: false, csrfToken: "test" };
   try {
     const state = await store.read(), view = workspaceView(state, caps, now);
-    assert.equal(view.editorial?.status, "synced"); assert.equal(view.editorial?.plan.units.length, 37);
+    assert.equal(view.editorial?.status, "synced"); assert.equal(view.editorial?.plan.units.length, bundled.units.length);
     assert.equal(new Set(state.cards.map(c => c.id)).size, state.cards.length);
     for (const u of plan.units) { assert(view.activeCardIds.includes(u.id)); const card = state.cards.find(c => c.id === u.id)!; assert.equal(card.publication, null); assert.equal(card.departmentDecision.status, "pending"); assert.equal(card.origin.evidence, "unverified"); assert(card.script?.includes(u.cta)); }
     assert.equal(Object.keys(view.preparedDetails).length, 0);
@@ -60,7 +60,7 @@ async function main() {
     assert.equal(JSON.parse(await fs.readFile(path.join(directory,"state.json"),"utf8")).cards.find((c: {id:string})=>c.id===first.id).title,"Recovered owner text");
     await fs.unlink(path.join(directory,"editorial/transaction.json"));
     assert(requests <= 5, "singleflight/cache bound"); assert.equal(current.receipt.replayed, false);
-    console.log("PASS editorial: 37 drafts/briefs; fixed source and cache; dates/80-20; no fake approvals/fact; idempotency; Git update without rebuild; owner title/column/facts preserved; last-good restart; downgrade/invalid/oversize rejection.");
+    console.log("PASS editorial: synchronized drafts/briefs; fixed source and cache; dates/80-20; no fake approvals/fact; idempotency; Git update without rebuild; owner title/column/facts preserved; last-good restart; downgrade/invalid/oversize rejection.");
   } finally { await fs.rm(directory, { recursive: true, force: true }); }
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

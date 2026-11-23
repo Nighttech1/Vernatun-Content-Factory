@@ -12,6 +12,7 @@ export const editorialPlanSchema = z.object({
   sync_version: z.literal(1), sequence: z.number().int().positive(), kind: z.literal("editorial_publication_plan_NOT_runtime_prepared_catalog"), revision: text, timezone: z.literal("Europe/Moscow"),
   units: z.array(editorialUnitSchema).min(1).max(200),
   weeks: z.array(z.object({ week: z.number().int().min(1).max(8), start: day, end: day, total: z.number().int().nonnegative(), upper: z.number().int().nonnegative(), lower: z.number().int().nonnegative(), formats: z.record(z.string(), z.number().int().nonnegative()), owner_minutes: z.number().int().min(0).max(180) }).strict()).length(8),
+  announcements: z.array(z.object({ date: day, title: text, format: text, channel: text, owner: text, action: text }).strict()).max(200).optional(),
   report_markdown: z.string().min(100).max(200000),
   shooting_schedule: z.object({ timezone: z.literal("Europe/Moscow"), days: z.tuple([z.literal("вторник"), z.literal("суббота")]), note: text }).strict(),
 }).passthrough().superRefine((p, ctx) => {

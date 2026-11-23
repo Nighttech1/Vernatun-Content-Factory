@@ -5,7 +5,7 @@ import { editorialPlanSchema, type EditorialPlan, type EditorialView } from "./e
 import { preparedSha256 } from "./workspace-prepared";
 import { writePreparedAtomic } from "./workspace-prepared-store";
 
-export const EDITORIAL_SOURCE_URL = "https://raw.githubusercontent.com/Nighttech1/Content-Factory/refs/heads/codex/director-chatgpt-transfer/projects/vernatun/content-plan/exports/publication-plan-2026-v3.json";
+export const EDITORIAL_SOURCE_URL = "https://raw.githubusercontent.com/Nighttech1/Vernatun-Content-Factory/refs/heads/codex/director-chatgpt-transfer/projects/vernatun/content-plan/exports/publication-plan-2026-v3.json";
 const MAX_BYTES = 1500000;
 type Result = Omit<EditorialView, "conflicts" | "appliedAt">;
 export function createEditorialSource(directory: string, options: { fetch?: typeof fetch; now?: () => Date; bundledOnly?: boolean; seed?: unknown } = {}) {

@@ -1,6 +1,5 @@
 """Manual Scout collector. No third-party dependencies, retries or publishing."""
 import datetime as dt
-from decimal import Decimal, InvalidOperation
 import json
 import os
 from pathlib import Path
@@ -37,7 +36,9 @@ def request_json(url, *, headers=None, payload=None):
 
 def validate(env):
     mode = env.get('SCOUT_MODE', 'check')
-    if mode not in ('check', 'youtube', 'instagram'):
+    if mode == 'instagram':
+        raise ScoutError('Instagram collection runs only in the Wednesday/Saturday @mosarmclub briefing')
+    if mode not in ('check', 'youtube'):
         raise ScoutError('Unsupported mode')
     if mode == 'check':
         return {'mode': mode}
@@ -48,26 +49,20 @@ def validate(env):
         raise ScoutError('Explicit collection authorization is required')
     handles = list(dict.fromkeys(h.strip().lstrip('@') for h in
                                env.get('SCOUT_HANDLES', 'mosarmclub').split(',') if h.strip()))
-    if mode == 'instagram':
-        handles = list(dict.fromkeys(['mosarmclub'] + [h.lower() for h in handles]))
     if not handles or len(handles) > 5 or any(
             not re.fullmatch(r'[\w.-]{1,100}', h) for h in handles):
         raise ScoutError('Expected 1–5 public handles, not URLs')
     try:
         limit = int(env.get('SCOUT_LIMIT', '5'))
-        budget = Decimal(env.get('SCOUT_APIFY_BUDGET_USD', '0.50'))
-    except (ValueError, InvalidOperation):
-        raise ScoutError('Invalid limit or budget') from None
+    except ValueError:
+        raise ScoutError('Invalid limit') from None
     if not 1 <= limit <= 12 or len(handles) * limit > 50:
         raise ScoutError('Limit must be 1–12 per handle and at most 50 total')
-    if not budget.is_finite() or not Decimal('0.01') <= budget <= Decimal('1.00'):
-        raise ScoutError('Apify budget must be 0.01–1.00 USD')
-    secret = (env.get('YOUTUBE_API_KEY') if mode == 'youtube' else
-              env.get('APIFY_TOKEN') or env.get('APIFY_API_KEY'))
+    secret = env.get('YOUTUBE_API_KEY')
     if not secret:
         raise ScoutError('Required repository secret is missing')
     return dict(mode=mode, report_id=report, handles=handles, limit=limit,
-                budget=str(budget), secret=secret)
+                secret=secret)
 
 
 def youtube(config):
@@ -95,43 +90,6 @@ def youtube(config):
                          'channel': channel, 'videos': [dict(v, source_url=
                             'https://www.youtube.com/watch?v=' + v['id']) for v in stats]})
     return {'channels': channels}
-
-
-def instagram(config):
-    # One actor run for all profiles, including ours. No retry on timeout/4xx/5xx.
-    query = urllib.parse.urlencode({'timeout': 180, 'maxTotalChargeUsd': config['budget']})
-    posts = request_json('https://api.apify.com/v2/acts/apify~instagram-scraper/'
-                         'run-sync-get-dataset-items?' + query,
-                         headers={'Authorization': 'Bearer ' + config['secret'],
-                                  'Content-Type': 'application/json'},
-                         payload={'directUrls': ['https://www.instagram.com/' + h + '/'
-                                                 for h in config['handles']],
-                                  'resultsType': 'posts', 'resultsLimit': config['limit'],
-                                  'addParentData': True})
-    if not isinstance(posts, list) or not posts or len(posts) > 50:
-        raise ScoutError('Empty, invalid or oversized Apify dataset; not retried')
-    fields = ('id', 'shortCode', 'url', 'type', 'caption', 'timestamp', 'ownerUsername',
-              'likesCount', 'commentsCount', 'videoViewCount', 'videoPlayCount',
-              'ownerFollowersCount', 'followersCount')
-    groups = {'ours': [], 'competitors': []}
-    counts = {}
-    for post in posts:
-        if not isinstance(post, dict) or post.get('error'):
-            raise ScoutError('Apify returned a failed item; snapshot is incomplete')
-        owner = str(post.get('ownerUsername', '')).lower()
-        if owner not in config['handles'] or not post.get('url'):
-            raise ScoutError('Apify item has no verified owner/source URL')
-        counts[owner] = counts.get(owner, 0) + 1
-        if counts[owner] > config['limit']:
-            raise ScoutError('Apify exceeded requested per-profile result limit')
-        groups['ours' if owner == 'mosarmclub' else 'competitors'].append(
-            {field: post.get(field) for field in fields})
-    missing = [h for h in config['handles'] if h not in counts]
-    if missing:
-        raise ScoutError('Apify returned no posts for one or more requested profiles')
-    return dict(groups, actor='apify/instagram-scraper', actor_runs_requested=1,
-                max_total_charge_usd=config['budget'], actual_charge_usd=None,
-                unavailable_metrics=['reach', 'impressions', 'saves', 'shares', 'demographics'])
 
 
 def redact(value, env):
@@ -164,7 +122,7 @@ def main(env=None, output=None):
         else:
             result.update(report_id=config['report_id'], handles=config['handles'],
                           limit_per_handle=config['limit'])
-            result['data'] = youtube(config) if config['mode'] == 'youtube' else instagram(config)
+            result['data'] = youtube(config)
             result['status'] = 'collected'
         code = 0
     except ScoutError as exc:

@@ -11,21 +11,25 @@ try{
   await context.route('**/*',r=>new URL(r.request().url()).origin===origin?r.continue():r.abort());
   const page=await context.newPage();page.on('pageerror',e=>report.errors.push(e.message));await page.goto(origin+'/growth',{waitUntil:'networkidle'});
   const response=await context.request.get(origin+'/api/growth-workspace'),view=await response.json();
-  assert.equal(view.editorial.plan.units.length,37);assert.equal(view.editorial.status,'bundled');assert.equal(Object.keys(view.preparedDetails).length,0);
+  assert(view.editorial.plan.units.length>0);assert.equal(view.editorial.status,'bundled');assert.equal(Object.keys(view.preparedDetails).length,0);
   assert.equal(await page.getByTestId('growth-editorial-plan').count(),0,'Editorial summary must not render above the Kanban');
+  const calendar=page.getByTestId('growth-publication-calendar');await calendar.waitFor();
+  await calendar.getByRole('combobox').selectOption('all');
+  assert.equal(await calendar.locator('details').count(),view.editorial.plan.units.length+(view.editorial.plan.announcements?.length||0));
+  await calendar.getByText('Впервые в Вернатуне',{exact:true}).click();assert.match(await calendar.locator('details[open]').innerText(),/Редактор каруселей/);
   const all=new Set();
   for(const stage of ['awareness','desire','registration','attendance','return','membership']){
    await page.getByTestId('growth-stage-'+stage).click();await page.waitForFunction(s=>document.querySelector('[data-testid="growth-kanban"]')?.dataset.stageId===s,stage);
    const expected=view.editorial.plan.units.filter(u=>['awareness','desire','registration','attendance','return','membership'][u.stage-1]===stage).map(u=>u.id);
    const ids=await page.getByTestId('growth-content-card').evaluateAll(nodes=>nodes.map(n=>n.dataset.cardId));for(const id of expected){assert(ids.includes(id),id+' missing');all.add(id)}
   }
-  assert.equal(all.size,37);await page.getByTestId('growth-stage-awareness').click();
+  assert.equal(all.size,view.editorial.plan.units.length);await page.getByTestId('growth-stage-awareness').click();
   await page.getByTestId('growth-open-V-202611-REL-03').click();await page.getByTestId('growth-editorial-brief').waitFor();assert.match(await page.getByTestId('growth-dialog-shooting').innerText(),/14.11.2026/);assert.match(await page.getByTestId('growth-dialog-plan-meta').innerText(),/16.11.2026/);
   await page.getByTestId('growth-card-dialog').getByRole('button',{name:'Закрыть окно',exact:true}).click();
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'body overflow');
   await page.screenshot({path:path.join(out,`editorial-${width}.png`),fullPage:true});
   await page.getByTestId('growth-mode-fact').click();assert.equal(await page.getByTestId('growth-content-card').count(),0);assert.equal(await page.getByTestId('growth-editorial-plan').count(),0);
-  report.widths.push({width,all37:true,inlineBrief:true,shootingVsPublication:true,summaryRemoved:true,noOverflow:true,noFakeFact:true});await context.close();
+  report.widths.push({width,allUnits:true,inlineBrief:true,shootingVsPublication:true,summaryRemoved:true,noOverflow:true,noFakeFact:true});await context.close();
  }
  assert.deepEqual(report.errors,[]);report.passed=true;
 }finally{fs.writeFileSync(path.join(out,'editorial-browser-report.json'),JSON.stringify(report,null,2));await browser.close();await fixture.close();}
